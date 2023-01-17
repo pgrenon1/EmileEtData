@@ -1,6 +1,6 @@
 import json
 
-class PoemEntry(object):
+class Poem(object):
     def __init__(self, jsonDict):
         self.title = jsonDict["title"]
         self.author = jsonDict["author"]

@@ -1,35 +1,42 @@
-# import nltk
 import json
-from poemEntry import PoemEntry
+from poem import Poem
 from data import Data
 from spacy.lang.fr import French
+import spacy
 
 data = Data()
 
+# loading the database
 with open("poems.json","r") as file:
     dataJson = json.load(file)
-    for poemEntryDict in dataJson:
-        poemEntry = PoemEntry(poemEntryDict["title"], 
-                              poemEntryDict["author"], 
-                              poemEntryDict["poem"])
-        data.poems.append(poemEntry)
+    for poem in dataJson:
+        poem = Poem(poem["title"], 
+                              poem["author"], 
+                              poem["poem"])
+        data.poems.append(poem)
         
-# tokenizer = nltk.data.load('/home/phil/nltk_data/tokenizers/punkt/french.pickle')
-# for poem in data.poems:
-#     sentenceTokenEnumerator = tokenizer.tokenize(poem.poem)
-#     sentences = [sentence for sentence in sentenceTokenEnumerator]
-#     for sentence in sentences:
-#         print(sentence)
-#         wordTokenEnumerator = tokenizer._tokenize_words(sentence)
-#         poem.tokens = [token for token in wordTokenEnumerator if token.tok not in string.punctuation]
-#         for token in poem.tokens:
-#             print(token)
+nlp = French() # spacy instance
 
-nlp = French()
-tokenizer = nlp.tokenizer
+# modifying the tokenizer to fit my needs
+# suffixes = list(nlp.Defaults.suffixes)
+# suffixes.remove("’") # removing ’ from the suffixes so that "j’ai" is one token
+# suffixes.remove("-") # removing - from the suffixes so that "suis-je" is one token
+# suffix_regex = spacy.util.compile_suffix_regex(suffixes)
+# nlp.tokenizer.suffix_search = suffix_regex.search
+
+# prefixes = list(nlp.Defaults.prefixes)
+# prefixes.remove("’") # removing ’ from the prefixes so that "j’ai" is one token
+# prefixes.remove("-") # removing - from the prefixes so that "suis-je" is one token
+# prefix_regex = spacy.util.compile_prefix_regex(prefixes)
+# nlp.tokenizer.prefix_search = prefix_regex.search
+
+# tokenizing
 for poem in data.poems:
-    tokens = tokenizer(poem.poem)
+    tokens = nlp.tokenizer(poem.poem)
     for token in tokens:
+        if token.is_punct: # skip tokens that are only punctuation
+            continue
+        
         print(token)
     break
     
